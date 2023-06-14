@@ -1,0 +1,1 @@
+export { KubecostCard } from './KubecostCard';

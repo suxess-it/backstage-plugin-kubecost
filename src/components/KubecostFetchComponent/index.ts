@@ -1,0 +1,1 @@
+export { KubecostFetchComponent } from './KubecostFetchComponent';
