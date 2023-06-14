@@ -21,9 +21,10 @@ Add the plugin to your frontend app:
 yarn add --cwd packages/app @suxess-it/backstage-plugin-kubecost
 ```
 
-# Configure `app-config.yaml`.
+# Configure Backstage 
+Adapt `app-config.yaml`:
 
-Kubecost requires configuration field: `kubecost: ` with valid `baseUrl` to kubecost API.
+Kubecost requires configuration field: `kubecost` with valid `baseUrl` to kubecost API.
 
 ```yaml
 ## ./app-config.yaml
@@ -50,7 +51,7 @@ import {
     </EntityLayout.Route>
 ```
 
-# Display alerts on a component Page
+# Display cost information on a component page
 Adding the `EntityKubecostCard` component to an entity's page will display usage to cost of last week.
 ```typescript
 // packages/app/src/components/catalog/EntityPage.tsx
