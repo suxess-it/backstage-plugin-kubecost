@@ -53,14 +53,13 @@ export const KubecostFetchComponent = () => {
   
    
   const getData = async (): Promise<Metrics[]> => {
-    const api = `${baseUrl}/model/allocation?window=1w&accumulate=true&shareIdle=weightedd&filter=label%5Bapp%5D:"${deployName}"+controllerKind:deployment`;
+    const api = `${baseUrl}/model/allocation?window=1w&accumulate=false&shareIdle=weightedd&filter=label%5Bapp%5D:"${deployName}"+controllerKind:deployment`;
     const response = await fetch(api).then(res => res.json());
     
     const metricsPromises: Promise<Metrics>[] = Object.entries(response?.data).map(async ([id, ref]) => {
       const nn = Object.keys(ref ?? {})[0];
       const typedRef = ref as { [key: string]: { id: string, name: string } };
       const val = typedRef?.[nn];
-      console.log(nn);
       return getMetrics(val);
     });
 
