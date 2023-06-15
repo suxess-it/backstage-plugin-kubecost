@@ -24,11 +24,13 @@ yarn add --cwd packages/app @suxess-it/backstage-plugin-kubecost
 Adapt `app-config.yaml`:
 
 Kubecost requires configuration field: `kubecost` with valid `baseUrl` to kubecost API.
+Optional: add shared namespaces -  of namespaces, which cost will be shared across client namespaces
 
 ```yaml
 ## ./app-config.yaml
 kubecost:
   baseUrl: https//<base URL to Kubecost> 
+  sharedNamespaces: <comma-separated list of namespaces>
 ```
 
 # Import Plugin and embed in the entities page:

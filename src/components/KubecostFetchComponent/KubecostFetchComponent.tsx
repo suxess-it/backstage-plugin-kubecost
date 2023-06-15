@@ -19,7 +19,7 @@ type Metrics = {
   gpuCost?: string;
   totalCost?: string;
   sharedCost?: string;
-  totalEfficiency?: number;
+  totalEfficiency?: string;
   timeframe?: string;
 };
 
@@ -33,7 +33,8 @@ export const KubecostFetchComponent = () => {
   const deployName = deploymentName(entity);
   const configApi = useApi(configApiRef);
   const baseUrl = configApi.getString('kubecost.baseUrl');
-
+  const sharedNamespaces = configApi.getString('kubecost.sharedNamespaces');
+  
   const round = (num: number) => +(Math.round(num * 1000) / 1000).toFixed(4);
 
   const getMetrics = (data: any): Metrics => {
@@ -47,13 +48,13 @@ export const KubecostFetchComponent = () => {
       totalCost: `€ ${round(data?.totalCost ?? 0)}`,
       sharedCost: `€ ${round(data?.sharedCost ?? 0)}`,
       minutes: (data?.minutes ?? 0),
-      totalEfficiency: (data?.totalEfficiency ?? 0),
+      totalEfficiency: `${(data?.totalEfficiency ?? 0)*100} %`,
     };
   };
   
    
   const getData = async (): Promise<Metrics[]> => {
-    const api = `${baseUrl}/model/allocation?window=1w&accumulate=false&shareIdle=weightedd&filter=label%5Bapp%5D:"${deployName}"+controllerKind:deployment`;
+    const api = `${baseUrl}/model/allocation?window=1w&accumulate=true&idle=false&shareIdle=false&shareNamespaces=${sharedNamespaces}&filter=label%5Bapp%5D:"${deployName}"+controllerKind:deployment`;
     const response = await fetch(api).then(res => res.json());
     
     const metricsPromises: Promise<Metrics>[] = Object.entries(response?.data).map(async ([id, ref]) => {
@@ -83,15 +84,15 @@ export const KubecostFetchComponent = () => {
 export const DenseTable = ({ metrics }: DenseTableProps) => {
   const columns: TableColumn[] = [
     { title: 'Timeframe', field: 'timeframe' },
+    { title: 'Total Cost', field: 'total' },
     { title: 'CPU Cost', field: 'cpu' },
     { title: 'Memory Cost', field: 'ram' },
-    { title: 'Network Cost', field: 'network' },
     { title: 'PV Cost', field: 'pv' },
+    { title: 'Network Cost', field: 'network' },
     { title: 'GPU Cost', field: 'gpu' },
     { title: 'Shared Cost', field: 'shared' },
-    { title: 'Total Cost', field: 'total' },
-    { title: 'Efficiency', field: 'totalEfficiency' },
     { title: 'Runtime in Minutes', field: 'minutes' },
+    { title: 'Efficiency', field: 'totalEfficiency' },
   ];
 
   const data = metrics.map(metric => ({
