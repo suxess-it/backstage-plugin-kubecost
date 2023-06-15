@@ -2,16 +2,15 @@
 
 Kubecost is a plugin to help engineers get information about cost of their deployment.
 
-Welcome to the kubecost backstage plugin!
-
-_This plugin was created through the Backstage CLI_
-
 # Setup
 
 # Kubecost installation:
 
-In order to use this Plugin you neet to install Kubecost.
-You will need to activate Annotations.
+In order to use this Plugin you neet to [install Kubecost](https://docs.kubecost.com/install-and-configure/install/getting-started)
+
+You will need to activate [Annotation Emission](https://docs.kubecost.com/install-and-configure/advanced-configuration/annotations)
+
+Optional: For Network Cost gathering you will need to [allocate network transfer](https://docs.kubecost.com/install-and-configure/advanced-configuration/network-costs-configuration) to pods.
 
 # Plugin Installation:
 Add the plugin to your frontend app:
