@@ -11,12 +11,14 @@ import useAsync from 'react-use/lib/useAsync';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
 type Metrics = {
+  minutes?: string;
   cpuCost?: string;
   ramCost?: string;
   networkCost?: string;
   pvCost?: string;
   gpuCost?: string;
   totalCost?: string;
+  sharedCost?: string;
   totalEfficiency?: number;
   timeframe?: string;
 };
@@ -32,7 +34,7 @@ export const KubecostFetchComponent = () => {
   const configApi = useApi(configApiRef);
   const baseUrl = configApi.getString('kubecost.baseUrl');
 
-  const round = (num: number) => +(Math.round(num * 100) / 100).toFixed(2);
+  const round = (num: number) => +(Math.round(num * 1000) / 1000).toFixed(4);
 
   const getMetrics = (data: any): Metrics => {
     return {
@@ -43,17 +45,29 @@ export const KubecostFetchComponent = () => {
       pvCost: `€ ${round(data?.pvCost ?? 0)}`,
       gpuCost: `€ ${round(data?.gpuCost ?? 0)}`,
       totalCost: `€ ${round(data?.totalCost ?? 0)}`,
-      totalEfficiency: round(data?.totalEfficiency ?? 0),
+      sharedCost: `€ ${round(data?.sharedCost ?? 0)}`,
+      minutes: (data?.minutes ?? 0),
+      totalEfficiency: (data?.totalEfficiency ?? 0),
     };
   };
   
+   
   const getData = async (): Promise<Metrics[]> => {
-    const api = `${baseUrl}/model/allocation?window=1w&accumulate=true&shareIdle=false&filter=label%5Bapp%5D:"${deployName}"+controllerKind:deployment`;
+    const api = `${baseUrl}/model/allocation?window=1w&accumulate=true&shareIdle=weightedd&filter=label%5Bapp%5D:"${deployName}"+controllerKind:deployment`;
     const response = await fetch(api).then(res => res.json());
-    const key = Object.keys(response?.data ?? {})[0];
-    const data = response?.data?.[key]?.[Object.keys(response?.data?.[key] ?? {})[0]];
-    return [getMetrics(data)];
+    
+    const metricsPromises: Promise<Metrics>[] = Object.entries(response?.data).map(async ([id, ref]) => {
+      const nn = Object.keys(ref ?? {})[0];
+      const typedRef = ref as { [key: string]: { id: string, name: string } };
+      const val = typedRef?.[nn];
+      console.log(nn);
+      return getMetrics(val);
+    });
+
+    const metrics = await Promise.all(metricsPromises);
+    return metrics;
   };
+
   const { value = [], loading, error } = useAsync(() => getData(), []);
 
   if (loading) {
@@ -75,12 +89,16 @@ export const DenseTable = ({ metrics }: DenseTableProps) => {
     { title: 'Network Cost', field: 'network' },
     { title: 'PV Cost', field: 'pv' },
     { title: 'GPU Cost', field: 'gpu' },
+    { title: 'Shared Cost', field: 'shared' },
     { title: 'Total Cost', field: 'total' },
     { title: 'Efficiency', field: 'totalEfficiency' },
+    { title: 'Runtime in Minutes', field: 'minutes' },
   ];
 
   const data = metrics.map(metric => ({
     timeframe: metric.timeframe,
+    shared: metric.sharedCost,
+    minutes: metric.minutes,
     cpu: metric.cpuCost,
     ram: metric.ramCost,
     network: metric.networkCost,
