@@ -81,3 +81,8 @@ annotations:
 
 This annotation accepts any valid deploymentname on k8s Cluster.
 
+# TODO
+Still a lot of work to be done:
+- add select for timeframe
+- add annotation for namespaces
+...
