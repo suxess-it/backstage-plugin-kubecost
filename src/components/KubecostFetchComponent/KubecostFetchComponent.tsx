@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Table,
   TableColumn,
   Progress,
   ResponseErrorPanel,
+  Content,
+  Page,
 } from '@backstage/core-components';
 import { configApiRef, fetchApiRef, useApi } from '@backstage/core-plugin-api';
 import { deploymentName } from '../useAppData';
 import useAsync from 'react-use/lib/useAsync';
 import { useEntity } from '@backstage/plugin-catalog-react';
+import { Item, Select } from '../Select';
+
 
 type Metrics = {
   minutes?: string;
@@ -34,51 +38,80 @@ export const KubecostFetchComponent = () => {
   const configApi = useApi(configApiRef);
   const baseUrl = configApi.getString('kubecost.baseUrl');
   const sharedNamespaces = configApi.getString('kubecost.sharedNamespaces');
-  
-  const round = (num: number) => +(Math.round(num * 1000) / 1000).toFixed(4);
+  const timeframes = configApi.getString('kubecost.timeframes');
+  const rawwindows = timeframes?.split(',')?.map(p => p.trim()) ?? [];
+  const accu = "false,true" 
+  const rawaccu = accu?.split(',')?.map(p => p.trim()) ?? [];
 
-  const getMetrics = (data: any): Metrics => {
+  const [selectedWindow, setselectedWindow] = useState<string>(
+    rawwindows ? rawwindows[0] : '',
+  );
+
+  const [selectedAccu, setselectedAccu] = useState<string>(
+    rawaccu ? rawaccu[0] : '',
+  );
+
+  function getMetrics(data: any): Metrics {
+    const round = (num: number) => +(Math.round(num * 1000) / 1000).toFixed(4);
     return {
       timeframe: `${data?.start ?? ''} to ${data?.end ?? ''}`,
+      totalCost: `€ ${round(data?.totalCost ?? 0)}`,
       cpuCost: `€ ${round(data?.cpuCost ?? 0)}`,
       ramCost: `€ ${round(data?.ramCost ?? 0)}`,
       networkCost: `€ ${round(data?.networkCost ?? 0)}`,
       pvCost: `€ ${round(data?.pvCost ?? 0)}`,
       gpuCost: `€ ${round(data?.gpuCost ?? 0)}`,
-      totalCost: `€ ${round(data?.totalCost ?? 0)}`,
       sharedCost: `€ ${round(data?.sharedCost ?? 0)}`,
       minutes: (data?.minutes ?? 0),
       totalEfficiency: `${(data?.totalEfficiency ?? 0)*100} %`,
     };
   };
-  
-   
-  const getData = async (): Promise<Metrics[]> => {
-    const api = `${baseUrl}/model/allocation?window=1w&accumulate=true&idle=false&shareIdle=false&shareNamespaces=${sharedNamespaces}&filter=label%5Bapp%5D:"${deployName}"+controllerKind:deployment`;
-    const response = await fetch(api).then(res => res.json());
-    
-    const metricsPromises: Promise<Metrics>[] = Object.entries(response?.data).map(async ([id, ref]) => {
-      const nn = Object.keys(ref ?? {})[0];
-      const typedRef = ref as { [key: string]: { id: string, name: string } };
-      const val = typedRef?.[nn];
-      return getMetrics(val);
-    });
 
-    const metrics = await Promise.all(metricsPromises);
-    return metrics;
+  const onSelectedWindowChange = (window: string) => {
+    setselectedWindow(window);
+  };
+  const onSelectedAccuChange = (accu: string) => {
+    setselectedAccu(accu);
   };
 
-  const { value = [], loading, error } = useAsync(() => getData(), []);
+  const api = `${baseUrl}/model/allocation?window=${selectedWindow}&accumulate=${selectedAccu}&idle=false&shareIdle=false&shareNamespaces=${sharedNamespaces}&filter=label%5Bapp%5D:"${deployName}"+controllerKind:deployment`;
+  //const api = useMemo(() => `${baseUrl}/model/allocation?window=${selectedWindow}&accumulate=false&idle=false&shareIdle=false&shareNamespaces=${sharedNamespaces}&filter=label%5Bapp%5D:"${deployName}"+controllerKind:deployment`, [baseUrl, selectedWindow, sharedNamespaces, deployName]);
 
-  if (loading) {
-    return <Progress />;
-  }
 
-  if (error) {
-    return <ResponseErrorPanel error={error} />;
-  }
-  console.log(value);
-  return <DenseTable metrics={value} />;
+//const [metrics, setMetrics] = useState<Metrics[]>([]);
+const { value = [], loading, error } = useAsync(async (): Promise<Metrics[]> => {
+  const response = await fetch(api).then(res => res.json());
+  const metricsPromises: Promise<Metrics>[] = Object.entries(response?.data).map(async ([id, ref]) => {
+    const nn = Object.keys(ref ?? {})[0];
+    const typedRef = ref as { [key: string]: { id: string, name: string } };
+    const val = typedRef?.[nn];
+    return getMetrics(val);
+  });
+  const metrics = await Promise.all(metricsPromises);
+  return metrics;
+}, [api]);
+
+  return (
+    <Page themeId="tool">
+      <Content noPadding>
+
+          <Select
+            value={selectedWindow}
+            onChange={window => onSelectedWindowChange(window)}
+            label="Data Selection Window "
+            items={rawwindows.map(p => ({ label: p, value: p }))}
+          />
+          <Select
+            value={selectedAccu}
+            onChange={accu => onSelectedAccuChange(accu)}
+            label="Accumulate Data"
+            items={rawaccu.map(p => ({ label: p, value: p }))}
+          />
+          {loading ? <Progress /> : error ? <ResponseErrorPanel error={error} /> : <DenseTable metrics={value} />}
+
+      </Content>
+    </Page>
+  );
 };
 
 export const DenseTable = ({ metrics }: DenseTableProps) => {
@@ -107,11 +140,10 @@ export const DenseTable = ({ metrics }: DenseTableProps) => {
     total: metric.totalCost,
     totalEfficiency: metric.totalEfficiency,
   }));
-  console.log();
 
   return (
     <Table
-      title="Deployment cost last week"
+      title='Cost by Deployment'
       options={{ search: false, paging: false }}
       columns={columns}
       data={data}

@@ -24,13 +24,15 @@ yarn add --cwd packages/app @suxess-it/backstage-plugin-kubecost
 Adapt `app-config.yaml`:
 
 Kubecost requires configuration field: `kubecost` with valid `baseUrl` to kubecost API.
-Optional: add shared namespaces -  of namespaces, which cost will be shared across client namespaces
 
+Optional: add shared namespaces -  of namespaces, which cost will be shared across client namespaces
+Optional: add Duration of time over which to query. Accepts words like today, week, month, yesterday, lastweek, lastmonth; durations like 30m, 12h, 7d; comma-separated RFC3339 date pairs like2021-01-02T15:04:05Z,2021-02-02T15:04:05Z; comma-separated Unix timestamp (seconds) pairs like 1578002645,1580681045.
 ```yaml
 ## ./app-config.yaml
 kubecost:
   baseUrl: https//<base URL to Kubecost> 
   sharedNamespaces: <comma-separated list of namespaces>
+  queryframes: <comma-separated list of queries>(e.g. week,yesterday,month,today,lastweek)
 ```
 
 # Import Plugin and embed in the entities page:
