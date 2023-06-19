@@ -1,18 +1,20 @@
 # Kubecost
+## Introduction
 
-Kubecost is a plugin to help engineers get information about cost of their deployment.
+Kubecost is a plugin to help engineers get information about cost usage/prediction of their deployment.
 
 # Setup
 
-# Kubecost installation:
+## Kubecost Installation:
 
-In order to use this Plugin you neet to [install Kubecost](https://docs.kubecost.com/install-and-configure/install/getting-started)
+In order to use this Backstage Plugin you have to [install Kubecost](https://docs.kubecost.com/install-and-configure/install/getting-started)
 
-You will need to activate [Annotation Emission](https://docs.kubecost.com/install-and-configure/advanced-configuration/annotations)
+Activate [Annotation Emission](https://docs.kubecost.com/install-and-configure/advanced-configuration/annotations)
+Add Cost Model [Cloud](https://docs.kubecost.com/install-and-configure/install/cloud-integration) or [onPremises](https://docs.kubecost.com/install-and-configure/install/provider-installations/air-gapped#how-do-i-configure-prices-for-my-on-premise-assets)
 
-Optional: For Network Cost gathering you will need to [allocate network transfer](https://docs.kubecost.com/install-and-configure/advanced-configuration/network-costs-configuration) to pods.
+Optional: For Network Cost gathering you will need to [Network Traffic Cost Allocation network transfer](https://docs.kubecost.com/using-kubecost/navigating-the-kubecost-ui/cost-allocation/network-allocation) to pods.
 
-# Plugin Installation:
+## Plugin Installation:
 Add the plugin to your frontend app:
 
 ```bash
@@ -25,9 +27,9 @@ Adapt `app-config.yaml`:
 
 Kubecost requires configuration field: `kubecost` with valid `baseUrl` to kubecost API.
 
-Optional:
+Optional Settings:
 - `sharedNamespaces` // add shared namespaces, from  which cost will be shared across client namespaces
-- `queryframes` // add Duration of time over which to query. Accepts words like today, week, month, yesterday, lastweek, lastmonth; durations like 30m, 12h, 7d; comma-separated RFC3339 date pairs like2021-01-02T15:04:05Z,2021-02-02T15:04:05Z; comma-separated Unix timestamp (seconds) pairs like 1578002645,1580681045.
+- `queryframes` // add Duration of time over which to query. Accepts words like today, week, month, yesterday, lastweek, lastmonth; durations like 30m, 12h, 7d ... {more details from official API Reference}(https://docs.kubecost.com/apis/apis-overview/allocation)
 
 ```yaml
 ## ./app-config.yaml
@@ -85,10 +87,9 @@ annotations:
   kubecost.com/deployment-name: '"my-kubernetes-deployment-name"'
 ```
 
-This annotation accepts any valid deploymentname on k8s Cluster.
+Please add Label `app:<my-kubernetes-deployment-name>` to deployment, then this annotation accepts any valid deploymentname on your k8s Cluster.
 
 # TODO
 Still a lot of work to be done:
-- add select for timeframe
-- add annotation for namespaces
+- add additional annotation for namespaces
 ...
