@@ -11,7 +11,7 @@ import { configApiRef, fetchApiRef, useApi } from '@backstage/core-plugin-api';
 import { deploymentName } from '../useAppData';
 import useAsync from 'react-use/lib/useAsync';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { Item, Select } from '../Select';
+import { Select } from '../Select';
 
 
 type Metrics = {

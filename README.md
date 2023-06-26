@@ -46,7 +46,7 @@ kubecost:
 import { 
   BackstagePluginKubecostPage,
   isKubecostAvailable
-} from '@suxess-it/plugin-backstage-plugin-kubecost';
+} from '@suxess-it/backstage-plugin-kubecost';
 
 // ...
 
@@ -64,9 +64,9 @@ Adding the `EntityKubecostCard` component to an entity's page will display usage
 // packages/app/src/components/catalog/EntityPage.tsx
 
 import { 
-  KubecostCard,
+  EntityKubecostCard,
   isKubecostAvailable
-} from '@suxess-it/plugin-backstage-plugin-kubecost';
+} from '@suxess-it/backstage-plugin-kubecost';
 
 // ...
 
