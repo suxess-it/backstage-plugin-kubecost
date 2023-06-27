@@ -37,10 +37,10 @@ export const KubecostFetchComponent = () => {
   const deployName = deploymentName(entity);
   const configApi = useApi(configApiRef);
   const baseUrl = configApi.getString('kubecost.baseUrl');
-  const sharedNamespaces = configApi.getString('kubecost.sharedNamespaces');
-  const timeframes = configApi.getString('kubecost.timeframes');
+  const sharedNamespaces = configApi.getOptionalString('kubecost.sharedNamespaces') ?? '';
+  const timeframes = configApi.getOptionalString('kubecost.queryframes') ?? 'today,week,yesterday';
   const rawwindows = timeframes?.split(',')?.map(p => p.trim()) ?? [];
-  const accu = "false,true" 
+  const accu = "true,false" 
   const rawaccu = accu?.split(',')?.map(p => p.trim()) ?? [];
 
   const [selectedWindow, setselectedWindow] = useState<string>(
