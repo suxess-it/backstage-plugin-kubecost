@@ -89,7 +89,7 @@ annotations:
 
 Please add Label `app:<my-kubernetes-deployment-name>` to deployment, then this annotation accepts any valid deploymentname on your k8s Cluster.
 
-![Screenshot](https://github.com/suxess-it/backstage-plugin-kubecost/raw/main/screenshot.png)
+![Screenshot](./docs/screenshot.png)
 
 # TODO
 Still a lot of work to be done:
