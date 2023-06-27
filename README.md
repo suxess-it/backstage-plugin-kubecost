@@ -9,8 +9,8 @@ Kubecost is a plugin to help engineers get information about cost usage/predicti
 
 In order to use this Backstage Plugin you have to [install Kubecost](https://docs.kubecost.com/install-and-configure/install/getting-started)
 
-Activate [Annotation Emission](https://docs.kubecost.com/install-and-configure/advanced-configuration/annotations)
-Add Cost Model [Cloud](https://docs.kubecost.com/install-and-configure/install/cloud-integration) or [onPremises](https://docs.kubecost.com/install-and-configure/install/provider-installations/air-gapped#how-do-i-configure-prices-for-my-on-premise-assets)
+- Activate [Annotation Emission](https://docs.kubecost.com/install-and-configure/advanced-configuration/annotations)
+- Add Cost Model [Cloud](https://docs.kubecost.com/install-and-configure/install/cloud-integration) or [onPremises](https://docs.kubecost.com/install-and-configure/install/provider-installations/air-gapped#how-do-i-configure-prices-for-my-on-premise-assets)
 
 Optional: For Network Cost gathering you will need to [Network Traffic Cost Allocation network transfer](https://docs.kubecost.com/using-kubecost/navigating-the-kubecost-ui/cost-allocation/network-allocation) to pods.
 
@@ -34,7 +34,7 @@ Optional Settings:
 ```yaml
 ## ./app-config.yaml
 kubecost:
-  baseUrl: https//<base URL to Kubecost> 
+  baseUrl: https://<base URL to Kubecost> 
   sharedNamespaces: <comma-separated list of namespaces>
   queryframes: <comma-separated list of queries>(e.g. week,yesterday,month,today,lastweek)
 ```
@@ -89,7 +89,7 @@ annotations:
 
 Please add Label `app:<my-kubernetes-deployment-name>` to deployment, then this annotation accepts any valid deploymentname on your k8s Cluster.
 
-![Screenshot](screenshot.png)
+![Screenshot](https://github.com/suxess-it/backstage-plugin-kubecost/raw/main/screenshot.png)
 
 # TODO
 Still a lot of work to be done:
