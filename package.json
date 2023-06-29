@@ -13,6 +13,13 @@
   "backstage": {
     "role": "frontend-plugin"
   },
+  "bugs": {
+    "url": "https://github.com/suxess-it/backstage-plugin-kubecost/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/suxess-it/backstage-plugin-kubecost.git"
+  },
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",

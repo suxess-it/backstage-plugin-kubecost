@@ -1,0 +1,20 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-kubecost
+  title: Backstage Plugin Kubecost
+  description: |
+    Backstage plugin to provide Kubecost Widgets
+  annotations:
+    github.com/project-slug: suxess-it/backstage-plugin-kubecost
+    backstage.io/view-url: https://github.com/suxess-it/backstage-plugin-kubecost/blob/main/catalog-info.yaml
+  tags:
+    - plugin
+    - frontend
+  links:
+    - url: https://www.npmjs.com/package/@suxess-it/backstage-plugin-kubecost
+      title: NPM
+spec:
+  type: library
+  owner: "group:default/guests"
+  lifecycle: production
