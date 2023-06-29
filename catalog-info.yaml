@@ -18,3 +18,5 @@ spec:
   type: library
   owner: "group:default/guests"
   lifecycle: production
+  dependsOn:
+    - resource:kubecost
