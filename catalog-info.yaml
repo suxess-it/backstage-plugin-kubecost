@@ -16,7 +16,7 @@ metadata:
       title: NPM
 spec:
   type: library
-  owner: "group:default/guests"
+  owner: sx-authors
   lifecycle: production
   dependsOn:
     - resource:kubecost
