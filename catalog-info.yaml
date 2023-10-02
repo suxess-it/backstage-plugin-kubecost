@@ -16,7 +16,7 @@ metadata:
       title: NPM
 spec:
   type: library
-  owner: philipp.achmueller
+  owner: sx-authors
   lifecycle: production
   dependsOn:
     - resource:kubecost
