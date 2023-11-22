@@ -30,6 +30,7 @@ Kubecost requires configuration field: `kubecost` with valid `baseUrl` to kubeco
 Optional Settings:
 - `sharedNamespaces` // add shared namespaces, from  which cost will be shared across client namespaces
 - `queryframes` // add Duration of time over which to query. Accepts words like today, week, month, yesterday, lastweek, lastmonth; durations like 30m, 12h, 7d ... {more details from official API Reference}(https://docs.kubecost.com/apis/apis-overview/allocation)
+- `unitprefix` // add Currency. Accepts $, €, ...
 
 ```yaml
 ## ./app-config.yaml
@@ -37,6 +38,7 @@ kubecost:
   baseUrl: https://<base URL to Kubecost> 
   sharedNamespaces: <comma-separated list of namespaces>
   queryframes: <comma-separated list of queries>(e.g. week,yesterday,month,today,lastweek)
+  unitprefix: '<unit>' (e.g. $, €(=default) )
 ```
 
 # Import Plugin and embed in the entities page:
