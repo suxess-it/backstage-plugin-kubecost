@@ -23,14 +23,19 @@ export interface Config {
      */
     baseUrl: string;
     /**
-     * Namespaces which will shared cost to deployments (Optional).
+     * Namespaces which will share their costs to deployments (Optional).
      * @visibility frontend
      */
     sharedNamespaces: string;
     /**
-     * Namespaces which will shared cost to deployments (Optional).
+     * Timeframes to select (Optional).
      * @visibility frontend
      */
     queryframes: string;
+    /**
+     * Currency Prefix (Optional).
+     * @visibility frontend
+     */
+    unitprefix: string;
   };
 }

@@ -39,6 +39,7 @@ export const KubecostFetchComponent = () => {
   const baseUrl = configApi.getString('kubecost.baseUrl');
   const sharedNamespaces = configApi.getOptionalString('kubecost.sharedNamespaces') ?? '';
   const timeframes = configApi.getOptionalString('kubecost.queryframes') ?? 'today,week,yesterday';
+  const unitprefix = configApi.getOptionalString('kubecost.unitprefix') ?? '€';
   const rawwindows = timeframes?.split(',')?.map(p => p.trim()) ?? [];
   const accu = "true,false" 
   const rawaccu = accu?.split(',')?.map(p => p.trim()) ?? [];
@@ -55,13 +56,13 @@ export const KubecostFetchComponent = () => {
     const round = (num: number) => +(Math.round(num * 1000) / 1000).toFixed(4);
     return {
       timeframe: `${data?.start ?? ''} to ${data?.end ?? ''}`,
-      totalCost: `€ ${round(data?.totalCost ?? 0)}`,
-      cpuCost: `€ ${round(data?.cpuCost ?? 0)}`,
-      ramCost: `€ ${round(data?.ramCost ?? 0)}`,
-      networkCost: `€ ${round(data?.networkCost ?? 0)}`,
-      pvCost: `€ ${round(data?.pvCost ?? 0)}`,
-      gpuCost: `€ ${round(data?.gpuCost ?? 0)}`,
-      sharedCost: `€ ${round(data?.sharedCost ?? 0)}`,
+      totalCost: `${unitprefix} ${round(data?.totalCost ?? 0)}`,
+      cpuCost: `${unitprefix} ${round(data?.cpuCost ?? 0)}`,
+      ramCost: `${unitprefix} ${round(data?.ramCost ?? 0)}`,
+      networkCost: `${unitprefix} ${round(data?.networkCost ?? 0)}`,
+      pvCost: `${unitprefix} ${round(data?.pvCost ?? 0)}`,
+      gpuCost: `${unitprefix} ${round(data?.gpuCost ?? 0)}`,
+      sharedCost: `${unitprefix} ${round(data?.sharedCost ?? 0)}`,
       minutes: (data?.minutes ?? 0),
       totalEfficiency: `${(data?.totalEfficiency ?? 0)*100} %`,
     };
