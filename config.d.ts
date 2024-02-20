@@ -37,5 +37,30 @@ export interface Config {
      * @visibility frontend
      */
     unitprefix: string;
+    /**
+     * Fraction digits (Optional).
+     * @visibility frontend
+     */
+    fractionDigits: number;
+    /**
+     * The name of the annotation that contains the deployment name  (Optional)
+     * @visibility frontend
+     */
+    annotationDeploymentName: string;
+    /**
+     * Share the cost of cluster overhead assets such as cluster management costs and node attached volumes across tenants of those resources  (Optional)
+     * @visibility frontend
+     */
+    shareTenancyCosts: boolean;
+    /**
+     * To aggregate the data by controller.  (Optional)
+     * @visibility frontend
+     */
+    aggregate: boolean;
+    /**
+     * Shows the Kubecost dashboard link in the Plugin information section.  (Optional)
+     * @visibility frontend
+     */
+    showDashboardLink: boolean;
   };
 }

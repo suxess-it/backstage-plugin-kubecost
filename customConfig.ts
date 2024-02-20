@@ -18,4 +18,11 @@
  * @public
  */
 
-export const KUBECOST_DEFAULT_ANNOTATION_DEPLOYMENT_NAME = 'kubecost.com/deployment-name';
+import {configApiRef, useApi} from "@backstage/core-plugin-api";
+import {KUBECOST_DEFAULT_ANNOTATION_DEPLOYMENT_NAME} from "./src/constants";
+
+export function useGetAnnotationDeploymentName(): string {
+    const configApi = useApi(configApiRef);
+    const kubecostAnnotationDeploymentName = configApi.getOptionalString('kubecost.annotationDeploymentName');
+    return kubecostAnnotationDeploymentName || KUBECOST_DEFAULT_ANNOTATION_DEPLOYMENT_NAME;
+}
