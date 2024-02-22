@@ -15,8 +15,8 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  KUBECOST_ANNOTATION_DEPLOYMENT_NAME,
-} from '../constants';
+import {useGetAnnotationDeploymentName} from "../../customConfig";
 
-export const deploymentName = (entity: Entity) => entity?.metadata.annotations?.[KUBECOST_ANNOTATION_DEPLOYMENT_NAME] ?? '';
+export const deploymentName = (entity: Entity) => {
+  return entity?.metadata.annotations?.[useGetAnnotationDeploymentName()] ?? '';
+};

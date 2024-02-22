@@ -31,6 +31,11 @@ Optional Settings:
 - `sharedNamespaces` // add shared namespaces, from  which cost will be shared across client namespaces
 - `queryframes` // add Duration of time over which to query. Accepts words like today, week, month, yesterday, lastweek, lastmonth; durations like 30m, 12h, 7d ... {more details from official API Reference}(https://docs.kubecost.com/apis/apis-overview/allocation)
 - `unitprefix` // add Currency. Accepts $, €, ...
+- `fractionDigits` // number of fraction digits to show in costs and average values, default is 4.
+- `annotationDeploymentName` // annotation name of the entity's metadata that refers to the Kubernetes label to identify the deployment related to the entity, default is ' kubecost.com/deployment-name'.
+- `shareTenancyCosts` // include shared tenancy costs in the cost calculation, true or false. Default is false.
+- `aggregate` // aggregate costs by controller, true or false. Default is false.
+- `showDashboardLink` // show a message with the direct link to the Kubecost website configured in `baseUrl` option, true or false . Default is false.
 
 ```yaml
 ## ./app-config.yaml
@@ -39,6 +44,10 @@ kubecost:
   sharedNamespaces: <comma-separated list of namespaces>
   queryframes: <comma-separated list of queries>(e.g. week,yesterday,month,today,lastweek)
   unitprefix: '<unit>' (e.g. $, €(=default) )
+  annotationDeploymentName: 'backstage.io/kubernetes-id'
+  shareTenancyCosts: true
+  aggregate: true
+  showDashboardLink: true
 ```
 
 # Import Plugin and embed in the entities page:
@@ -86,14 +95,15 @@ Kubecost Plugin are correlated to Backstage entities using an annotation added i
 
 ```yml
 annotations:
-  kubecost.com/deployment-name: '"my-kubernetes-deployment-name"'
+  <annotationDeploymentName>: my-kubernetes-deployment-name
 ```
 
-Please add Label `app:<my-kubernetes-deployment-name>` to deployment, then this annotation accepts any valid deploymentname on your k8s Cluster.
+Please add Label `<annotationDeploymentName>:<my-kubernetes-deployment-name>` to deployment, then this annotation accepts any valid deploymentname on your k8s Clusters.
+If the deployment is deployed in multiple kubernetes clusters, the plugin will show the costs of the deployment in every cluster.
 
 ![Screenshot](./docs/screenshot.png)
 
 # TODO
 Still a lot of work to be done:
 - add additional annotation for namespaces
-...
+  ...

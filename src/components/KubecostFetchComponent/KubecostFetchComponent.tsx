@@ -12,6 +12,7 @@ import { deploymentName } from '../useAppData';
 import useAsync from 'react-use/lib/useAsync';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Select } from '../Select';
+import {useGetAnnotationDeploymentName} from "../../../customConfig";
 
 
 type Metrics = {
@@ -22,6 +23,7 @@ type Metrics = {
   pvCost?: string;
   gpuCost?: string;
   totalCost?: string;
+  deployment?: string;
   sharedCost?: string;
   totalEfficiency?: string;
   timeframe?: string;
@@ -40,6 +42,9 @@ export const KubecostFetchComponent = () => {
   const sharedNamespaces = configApi.getOptionalString('kubecost.sharedNamespaces') ?? '';
   const timeframes = configApi.getOptionalString('kubecost.queryframes') ?? 'today,week,yesterday';
   const unitprefix = configApi.getOptionalString('kubecost.unitprefix') ?? '€';
+  const fractionDigits = configApi.getOptionalNumber('kubecost.fractionDigits') ?? 4;
+  const shareTenancyCosts = configApi.getOptionalBoolean('kubecost.shareTenancyCosts') ?? false;
+  const aggregate = configApi.getOptionalBoolean('kubecost.aggregate') ?? false;
   const rawwindows = timeframes?.split(',')?.map(p => p.trim()) ?? [];
   const accu = "true,false" 
   const rawaccu = accu?.split(',')?.map(p => p.trim()) ?? [];
@@ -53,9 +58,11 @@ export const KubecostFetchComponent = () => {
   );
 
   function getMetrics(data: any): Metrics {
-    const round = (num: number) => +(Math.round(num * 1000) / 1000).toFixed(4);
+    const round = (num: number) => +(Math.round(num * 1000) / 1000).toFixed(fractionDigits);
+
     return {
       timeframe: `${data?.start ?? ''} to ${data?.end ?? ''}`,
+      deployment: `${data?.properties.controller ?? ''}`,
       totalCost: `${unitprefix} ${round(data?.totalCost ?? 0)}`,
       cpuCost: `${unitprefix} ${round(data?.cpuCost ?? 0)}`,
       ramCost: `${unitprefix} ${round(data?.ramCost ?? 0)}`,
@@ -64,7 +71,7 @@ export const KubecostFetchComponent = () => {
       gpuCost: `${unitprefix} ${round(data?.gpuCost ?? 0)}`,
       sharedCost: `${unitprefix} ${round(data?.sharedCost ?? 0)}`,
       minutes: (data?.minutes ?? 0),
-      totalEfficiency: `${(data?.totalEfficiency ?? 0)*100} %`,
+      totalEfficiency: `${round((data?.totalEfficiency ?? 0)*100).toFixed(fractionDigits)} %`,
     };
   };
 
@@ -75,14 +82,25 @@ export const KubecostFetchComponent = () => {
     setselectedAccu(accu);
   };
 
-  const api = `${baseUrl}/model/allocation?window=${selectedWindow}&accumulate=${selectedAccu}&idle=false&shareIdle=false&shareNamespaces=${sharedNamespaces}&filter=label%5Bapp%5D:"${deployName}"+controllerKind:deployment`;
-  //const api = useMemo(() => `${baseUrl}/model/allocation?window=${selectedWindow}&accumulate=false&idle=false&shareIdle=false&shareNamespaces=${sharedNamespaces}&filter=label%5Bapp%5D:"${deployName}"+controllerKind:deployment`, [baseUrl, selectedWindow, sharedNamespaces, deployName]);
+  const api = `${baseUrl}/model/allocation?` +
+      `window=${selectedWindow}&` +
+      `accumulate=${selectedAccu}&` +
+      `idle=false&` +
+      `shareIdle=false&` +
+      `${aggregate? 'aggregate=controller&': ''  }` +
+      `shareNamespaces=${sharedNamespaces}&` +
+      `shareTenancyCosts=${shareTenancyCosts}&` +
+      `filter=label%5B${useGetAnnotationDeploymentName()}%5D:"${deployName}"+controllerKind:deployment`;
 
+  const { value = [], loading, error } = useAsync(async (): Promise<Metrics[]> => {
+    const response = await fetch(api).then(res => res.json());
+    const flatResponse = {
+      data: response.data
+          .filter((obj: null | Array<{ [key: string]: any }>) => obj !== null && obj !== undefined)
+          .flatMap((obj: Array<{ [key: string]: any }>) => Object.entries(obj).map(([key, value]) => ({[key]: value})))
+    };
 
-//const [metrics, setMetrics] = useState<Metrics[]>([]);
-const { value = [], loading, error } = useAsync(async (): Promise<Metrics[]> => {
-  const response = await fetch(api).then(res => res.json());
-  const metricsPromises: Promise<Metrics>[] = Object.entries(response?.data).map(async ([id, ref]) => {
+  const metricsPromises: Promise<Metrics>[] = Object.entries(flatResponse?.data).map(async ([id, ref]) => {
     const nn = Object.keys(ref ?? {})[0];
     const typedRef = ref as { [key: string]: { id: string, name: string } };
     const val = typedRef?.[nn];
@@ -118,6 +136,7 @@ const { value = [], loading, error } = useAsync(async (): Promise<Metrics[]> => 
 export const DenseTable = ({ metrics }: DenseTableProps) => {
   const columns: TableColumn[] = [
     { title: 'Timeframe', field: 'timeframe' },
+    { title: 'Deployment', field: 'deployment' },
     { title: 'Total Cost', field: 'total' },
     { title: 'CPU Cost', field: 'cpu' },
     { title: 'Memory Cost', field: 'ram' },
@@ -131,6 +150,7 @@ export const DenseTable = ({ metrics }: DenseTableProps) => {
 
   const data = metrics.map(metric => ({
     timeframe: metric.timeframe,
+    deployment: metric.deployment,
     shared: metric.sharedCost,
     minutes: metric.minutes,
     cpu: metric.cpuCost,

@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
-import {useGetAnnotationDeploymentName} from "../customConfig";
+/**
+ * @public
+ */
 
-export const isKubecostAvailable = (entity: Entity) => {
-   return Boolean(entity?.metadata.annotations?.[useGetAnnotationDeploymentName()]);
-};
+import {configApiRef, useApi} from "@backstage/core-plugin-api";
+import {KUBECOST_DEFAULT_ANNOTATION_DEPLOYMENT_NAME} from "./src/constants";
+
+export function useGetAnnotationDeploymentName(): string {
+    const configApi = useApi(configApiRef);
+    const kubecostAnnotationDeploymentName = configApi.getOptionalString('kubecost.annotationDeploymentName');
+    return kubecostAnnotationDeploymentName || KUBECOST_DEFAULT_ANNOTATION_DEPLOYMENT_NAME;
+}

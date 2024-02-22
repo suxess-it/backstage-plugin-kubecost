@@ -18,4 +18,4 @@
  * @public
  */
 
-export const KUBECOST_ANNOTATION_DEPLOYMENT_NAME = 'kubecost.com/deployment-name';
+export const KUBECOST_DEFAULT_ANNOTATION_DEPLOYMENT_NAME = 'kubecost.com/deployment-name';
