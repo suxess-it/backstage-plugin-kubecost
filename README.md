@@ -102,6 +102,7 @@ Please add Label `<annotationDeploymentName>:<my-kubernetes-deployment-name>` to
 If the deployment is deployed in multiple kubernetes clusters, the plugin will show the costs of the deployment in every cluster.
 
 ![Screenshot](./docs/screenshot.png)
+![Multi-Cluster](./docs/multi-cluster.png)
 
 # TODO
 Still a lot of work to be done:
